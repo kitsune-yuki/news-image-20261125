@@ -1,21 +1,27 @@
 #!/usr/bin/env python3
-"""News-image entry: copy the finished front page beside this file
-to the output directory.
+"""Ship the finished front page for the 25 November 2026 entry.
 
-The image itself (entry.png) was composed in this repository by
-compose.py from the pixel-art illustration scene.png (drawn pixel by
-pixel by pixel.py) and the 25 November 2026 news summary it carries.
-This program does no network and no drawing, so both runs write
-exactly the same bytes.
+The front page is already composed (compose.py) from the pixel-art
+scene (pixel.py) and the day's news; this entrypoint only copies the
+finished PNG to the output directory. It needs no network, draws
+nothing and writes identical bytes on every run.
 
 Run:  mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
 """
 import os
 import shutil
+from pathlib import Path
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(HERE, "entry.png")
-DST_DIR = os.environ.get("MAKEFUN_OUTPUT_DIR", "/output")
+SOURCE = Path(__file__).resolve().parent / "entry.png"
 
-os.makedirs(DST_DIR, exist_ok=True)
-shutil.copyfile(SRC, os.path.join(DST_DIR, "entry.png"))
+
+def ship():
+    if not SOURCE.is_file():
+        raise FileNotFoundError(f"missing finished front page: {SOURCE}")
+    target = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
+    target.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(SOURCE, target / "entry.png")
+
+
+if __name__ == "__main__":
+    ship()
